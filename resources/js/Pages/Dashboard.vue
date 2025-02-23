@@ -120,6 +120,7 @@ const verModal = ref(true);
                     <div></div>
                     <details>
                         <summary class="font-bold text-lg">Ticket: #{{ ticket.id }}</summary>
+                        <div><i class="bi bi-calendar-day"></i> Id de estabecimiento: {{ ticket.establecimiento_id }}</div>
                         <div><i class="bi bi-calendar-day"></i> Fecha: {{ ticket.created_at }}</div>
                         <div><i class="bi bi-cash me-2"></i>Total: ${{ ticket.total }}</div>
                         <div v-for="platillo in ticket.platillos" class="p-2 bg-gray-100 border-b">
