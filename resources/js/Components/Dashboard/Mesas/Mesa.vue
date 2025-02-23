@@ -1,11 +1,55 @@
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, reactive, ref } from 'vue';
 import { router } from '@inertiajs/vue3';
 
 const props = defineProps({
     mesa:Object,
     platillos:Array
 })
+
+// este el el carrito de compra, aqui estaran todos los productos
+const carrito = reactive([]);
+const pago = ref(0);
+const total = ref(0);
+
+async function pagar(){
+    router.post("/venta",{
+        mesa:props.mesa.id,
+        carrito:carrito,
+        total:total.value
+    })
+    cancelar_reservacion();
+}
+
+function calcularTotal(){
+    const subtotal = carrito.reduce((acumulador,plato)=>{
+        return acumulador += plato.precio * plato.cantidad;
+    },0)
+    total.value = subtotal;
+}
+
+// agregar un platillo al carrito
+function agregarPlatoAlCarrito(plato){
+    carrito.push({
+        ...plato,
+        cantidad:1
+    })
+    calcularTotal();
+}
+
+// cambiar la cantidad de un plato en el carrito
+function editarCantidadPlato(event,id){
+    const index = carrito.findIndex(plato => plato.id == id);
+    carrito[index].cantidad = event.target.value;
+    calcularTotal();
+}
+
+// cambiar la cantidad de un plato en el carrito
+function eliminarPlato(id){
+    const index = carrito.findIndex(plato => plato.id == id);
+    carrito.splice(index,1);
+    calcularTotal();
+}
 
 const comensal = ref("");
 
@@ -50,8 +94,7 @@ const resultado = computed(()=>{
         <!--Modal Reservacion-->
         <div class="fixed w-screen h-screen left-0 top-0  bg-black bg-opacity-10 border flex justify-center items-center" v-if="verReservacion">
             
-            <Transition name="slide-fade">
-            <dialog open class="p-6 flex flex-col w-[800px] gap-2 rounded-xl shadow-2xl border" v-if="verReservacion">
+            <dialog open class="p-6 flex flex-col w-[1000px] gap-2 rounded-xl shadow-2xl border" v-if="verReservacion">
                 <!--Barra de titulo de ventana, titulo y boton de cerrar-->
                 <div class="flex justify-between">
                         <h1 class="font-bold text-lg">Administrar Reservacion</h1>
@@ -68,23 +111,44 @@ const resultado = computed(()=>{
                         <h1>Buscar Platillos</h1>
                         <input type="text" placeholder="Buscar Plato" class="rounded border border-gray-200 shadow-md mb-3" v-model="pattern">
                         <div class="flex flex-col rounded-xl overflow-clip border">
-                            <button class="bg-gray-100 hover:bg-gray-50 p-2 border-b flex justify-between" v-for="plato in resultado"><span><i class="bi bi-egg me-2"></i>{{ plato.nombre }}</span> <span class="text-green-600 font-bold">${{ plato.precio }}</span></button>
+                            <button class="bg-gray-100 hover:bg-gray-50 p-2 border-b flex justify-between" v-for="plato in resultado" @click="agregarPlatoAlCarrito(plato)"><span><i class="bi bi-egg me-2"></i>{{ plato.nombre }}</span> <span class="text-green-600 font-bold">${{ plato.precio }}</span></button>
                         </div>
                     </div>
                     
-                    <div class="h-[500px] overflow-y-auto flex flex-col w-full">
+                    <div class="h-[500px] overflow-y-auto flex flex-col w-full p-3">
                         <h1>Pedidos</h1>
+                        <div class="h-full overflow-y-scroll">
+                            <div class="flex flex-col rounded-xl overflow-clip border">
+                                <button class="bg-gray-100 hover:bg-gray-50 p-2 border-b flex justify-between" v-for="plato in carrito">
+                                    <span>{{ plato.nombre }}</span>
+                                    <p>x{{ plato.cantidad }}</p>
+                                    <div class="">
+                                        <input type="text" class="w-[50px] me-2" value="1" id="" @keyup="editarCantidadPlato($event,plato.id)">
+                                        <button class="" @click="eliminarPlato(plato.id)"><i class="bi bi-trash"></i></button>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class=" flex flex-col">
+                            <p>${{ total }}</p>
+                            <p>Pago con:</p>
+                            <input type="text" placeholder="0" v-model="pago">
+                            <div class="flex flex-col" v-if="pago>0">
+                                cambio:
+                                <input type="text" placeholder="0" :value="pago - total">
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
                 
 
                 <div class="flex gap-2 justify-between">
-                    <button class="bg-red-500 p-2 w-[50px] text-white rounded" @click="cancelar_reservacion"><i class="bi bi-trash"></i></button>
-                    <button class="bg-blue-500 w-[350px] text-white p-2 rounded" @click="verReservacion=false">Pagar</button>
+                    <button class="bg-red-500 p-2 text-white rounded" @click="cancelar_reservacion"><i class="bi bi-trash"></i>Cancelar Orden</button>
+                    <button class="bg-blue-500 w-[350px] text-white p-2 rounded" @click="pagar()">Pagar</button>
                 </div>
             </dialog>
-        </Transition>
             
         </div>
 

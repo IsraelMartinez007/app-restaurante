@@ -6,7 +6,7 @@
 Instalar dependencias de composer y npm
 
 ```sh
-composer install && composer run dev
+composer install && npm install
 ```
 
 Crear archivo .env apartir de .env.example

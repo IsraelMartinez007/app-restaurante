@@ -7,13 +7,6 @@ import { router } from "@inertiajs/vue3";
 // componentes que usa dashboard
 import Mesa from "@/Components/Dashboard/Mesas/Mesa.vue";
 
-onMounted(()=>{
-    console.log("reservaciones: ",props.reservaciones);
-    props.platillos.forEach((plato)=>{
-        console.log(plato.nombre);
-    })
-})
-
 //obtener los datos que nos manda inertia
 const props = defineProps({
     establecimientos:Array, // nombre de la variable y que es
@@ -23,8 +16,9 @@ const props = defineProps({
     platillos:Array
 })
 
-async function cambiarEstablecimiento(){
+function cambiarEstablecimiento(){
 router.patch(`/update/${sucursal.value}`);
+verModal=false;
 }
 
 // crear variables con ref
@@ -43,7 +37,6 @@ const verModal = ref(true);
        
        
         <!--Modal seleccionar establecimiento-->
-        <Transition>
         <div class="fixed w-screen h-screen bg-black bg-opacity-25 flex justify-center items-center" v-if="verModal==true">
 
 
@@ -63,7 +56,6 @@ const verModal = ref(true);
                 </dialog>
                 
             </div>
-        </Transition>
 
 
         <!--barra de navegacion-->
