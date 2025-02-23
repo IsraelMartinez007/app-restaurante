@@ -17,6 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('platillo_id'); // Relación con el platillo
             $table->integer('cantidad'); // Cantidad de platillos en la compra
             $table->decimal('precio', 8, 2); // Precio por platillo en la compra
+            $table->decimal('subtotal', 8, 2); // Precio por platillo en la compra
             $table->timestamps();
 
             // Relación con el ticket

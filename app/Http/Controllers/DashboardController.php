@@ -35,7 +35,8 @@ class DashboardController extends Controller
             "establecimientos"=>Establecimiento::all(),
             "mesas"=>$mesas,
             "reservaciones"=>$reservaciones,
-            "platillos"=>$pĺatillos
+            "platillos"=>$pĺatillos,
+            "tickets"=>Ticket::all()
         ]);
     }
     
@@ -79,6 +80,7 @@ class DashboardController extends Controller
             'platillo_id' => $item['id'],
             'cantidad' => $item['cantidad'],
             'precio' => $item['precio'],
+            'subtotal' => $item['precio']*$item['cantidad'],
         ]);
     }
 

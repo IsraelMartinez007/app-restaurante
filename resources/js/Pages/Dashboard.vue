@@ -13,7 +13,12 @@ const props = defineProps({
     establecimiento_actual:Object,
     mesas:Array,
     reservaciones:Array,
-    platillos:Array
+    platillos:Array,
+    tickets:Array
+})
+
+onMounted(()=>{
+    console.log(props.tickets)
 })
 
 function cambiarEstablecimiento(){
@@ -109,8 +114,23 @@ const verModal = ref(true);
             </section>
 
 
-            <section v-if="vista==1">estas en la lista de reservas</section>
-            <section v-if="vista==2">estas en el crud de platillos</section>
+            <section v-if="vista==1">
+                <h1>Reporte de ventas</h1>
+                <div v-for="ticket in tickets" class="border-b p-2">
+                    <div></div>
+                    <details>
+                        <summary class="font-bold text-lg">Ticket: #{{ ticket.id }}</summary>
+                        <div><i class="bi bi-calendar-day"></i> Fecha: {{ ticket.created_at }}</div>
+                        <div><i class="bi bi-cash me-2"></i>Total: ${{ ticket.total }}</div>
+                        <div v-for="platillo in ticket.platillos" class="p-2 bg-gray-100 border-b">
+                            <div><i class="bi bi-egg me-2"></i>{{ platillo.nombre }}</div>
+                            <div>${{ platillo.precio }}</div>
+                            <div>x{{ platillo.pivot.cantidad}}</div>
+                            <div>=${{ platillo.pivot.cantidad * platillo.precio}}</div>
+                        </div>
+                    </details>
+                </div>
+            </section>
         </div>
 
     </main>

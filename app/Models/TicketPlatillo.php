@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class TicketPlatillo extends Model
 {
-    protected $fillable = ['ticket_id', 'platillo_id', 'cantidad', 'precio'];
+    protected $fillable = ['ticket_id', 'platillo_id', 'cantidad','subtotal', 'precio'];
 
     // Relación con el ticket
     public function ticket()
